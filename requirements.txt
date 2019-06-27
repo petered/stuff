@@ -1,0 +1,5 @@
+
+numpy
+torch
+torchvision
+-e git+http://github.com/petered/artemis.git#egg=artemis

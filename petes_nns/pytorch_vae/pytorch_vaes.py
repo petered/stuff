@@ -180,7 +180,7 @@ class NormalDistributionUnitVarianceLayer(DistributionLayer):
         return Normal(loc=mu, scale=1.)
 
 
-class BernoulliDistributionLayer(nn.Module):
+class BernoulliDistributionLayer(DistributionLayer):
 
     def __init__(self, transform_constructor):
         super(BernoulliDistributionLayer, self).__init__()
@@ -218,7 +218,7 @@ class BernoulliDistributionConvLayer(nn.Module):
 def make_mlp_encoder(visible_dim, hidden_sizes, latent_dim, nonlinearity ='relu'):
     net = make_mlp(in_size=visible_dim, hidden_sizes=hidden_sizes, nonlinearity=nonlinearity)
     mid_size = visible_dim if len(hidden_sizes) == 0 else hidden_sizes[-1]
-    top_layer = NormalDistributionLayer(mid_size, latent_dim)
+    top_layer = NormalDistributionLayer.from_dense(mid_size, latent_dim)
     net.add_module('z_dist', top_layer)
     return net
 
@@ -226,7 +226,7 @@ def make_mlp_encoder(visible_dim, hidden_sizes, latent_dim, nonlinearity ='relu'
 def make_mlp_decoder(latent_dim, hidden_sizes, visible_dim, nonlinearity ='relu', dist_type ='bernoulli'):
     net = make_mlp(in_size=latent_dim, hidden_sizes=hidden_sizes, nonlinearity=nonlinearity)
     mid_size = latent_dim if len(hidden_sizes) == 0 else hidden_sizes[-1]
-    final_layer = {'normal': NormalDistributionLayer, 'bernoulli': BernoulliDistributionLayer}[dist_type](mid_size, visible_dim)
+    final_layer = {'normal': NormalDistributionLayer, 'bernoulli': BernoulliDistributionLayer}[dist_type].from_dense(mid_size, visible_dim)
     net.add_module('output', final_layer)
     return net
 
